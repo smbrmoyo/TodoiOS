@@ -17,6 +17,7 @@ class TodosListViewModel: ObservableObject {
     @Published var selectedFilter: QueryFilter = .all
     @Published var sortBy: SortBy = .due
     @Published var sortDirection: SortDirection = .ascending
+    @Published var showSettings: Bool = false
     
     // MARK: - Initializer
     
@@ -27,6 +28,7 @@ class TodosListViewModel: ObservableObject {
     // MARK: - Functions
     
     func fetchTodos() async {
+        print("called")
         do {
             todos = try await repository.fetchTodos(filter: selectedFilter,
                                                     sortBy: sortBy,
