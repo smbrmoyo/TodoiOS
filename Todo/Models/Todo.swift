@@ -10,6 +10,7 @@ import Foundation
 /// `Todo` Model
 struct Todo: Identifiable, Codable {
     let id: String
-    var taskDescription, createdDate, dueDate: String // Dates will be stored in the ISO format
+    var taskDescription: String
+    var createdDate, dueDate: Date
     var completed: Bool
 }

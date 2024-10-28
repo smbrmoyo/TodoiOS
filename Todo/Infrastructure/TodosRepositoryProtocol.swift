@@ -13,12 +13,12 @@ protocol TodosRepositoryProtocol {
     func getTodo(_ id: String) async throws -> Todo
     
     func createTodo(taskDescription: String,
-                    createdDate: String,
-                    dueDate: String) async throws -> Todo
+                    createdDate: Date,
+                    dueDate: Date) async throws -> Todo
     
     func updateTodo(id: String,
                     taskDescription: String,
-                    dueDate: String,
+                    dueDate: Date,
                     completed: Bool) async throws -> Todo
     
     func deleteTodo(id: String) async throws -> Todo

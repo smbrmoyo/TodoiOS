@@ -15,13 +15,11 @@ struct TodosListView: View {
             ScrollView {
                 LazyVStack {
                     ForEach(viewModel.todos) { todo in
-                        Text(todo.taskDescription)
+                        TodoView(todo: todo)
                     }
                 }
             }
-            .task {
-                await viewModel.fetchTodos()
-            }
+            .modifier(TodosListViewModifier(viewModel: viewModel))
         }
     }
 }
