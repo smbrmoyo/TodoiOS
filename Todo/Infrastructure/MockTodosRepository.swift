@@ -9,9 +9,13 @@ import Foundation
 
 class MockTodosRepository: TodosRepositoryProtocol {
     
-    func fetchTodos() async throws -> [Todo] {
+    func fetchTodos(filter: QueryFilter,
+                    sortBy: SortBy,
+                    sortDirection: SortDirection) async throws -> [Todo] {
         do {
-            return try FileManager.loadJson(fileName: "Todos")
+            let result: [Todo] = try FileManager.loadJson(fileName: "Todos")
+            
+            return result.filter(filter.filter()).sorted(by: sortBy.comparator(direction: sortDirection))
         } catch {
             print(error)
             throw error
