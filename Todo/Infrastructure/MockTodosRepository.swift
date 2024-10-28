@@ -30,8 +30,8 @@ class MockTodosRepository: TodosRepositoryProtocol {
     }
     
     func createTodo(taskDescription: String,
-                    createdDate: Date,
-                    dueDate: Date) async throws -> Todo {
+                    createdDate: String,
+                    dueDate: String) async throws -> Todo {
         return .init(id: UUID().uuidString,
                      taskDescription: taskDescription,
                      createdDate: createdDate,
@@ -41,7 +41,7 @@ class MockTodosRepository: TodosRepositoryProtocol {
     
     func updateTodo(id: String,
                     taskDescription: String,
-                    dueDate: Date,
+                    dueDate: String,
                     completed: Bool) async throws -> Todo {
         do {
             let todos: [Todo] = try FileManager.loadJson(fileName: "Todos")
