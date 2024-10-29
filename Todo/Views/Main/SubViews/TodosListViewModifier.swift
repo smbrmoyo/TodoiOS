@@ -42,7 +42,7 @@ struct TodosListViewModifier: ViewModifier {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $viewModel.showSettingsSheet, onDismiss: {
                 Task {
-                    await viewModel.fetchTodos()
+                    await viewModel.fetchTodosIfNeeded()
                 }
             }) {
                 SettingsView(todosListViewModel: viewModel)
@@ -50,5 +50,6 @@ struct TodosListViewModifier: ViewModifier {
             .sheet(isPresented: $viewModel.showCreateSheet) {
                 CreateTodoView()
             }
+            .working(uiState: viewModel.uiState)
     }
 }

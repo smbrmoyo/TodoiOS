@@ -45,6 +45,7 @@ struct EditTodoView: View {
                         .font(.largeTitle)
                 }
             }
+            .working(uiState: viewModel.uiState)
         }
     }
 }

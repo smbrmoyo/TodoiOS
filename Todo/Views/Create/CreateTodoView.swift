@@ -34,6 +34,7 @@ struct CreateTodoView: View {
                         .font(.largeTitle)
                 }
             }
+            .working(uiState: viewModel.uiState)
         }
     }
 }

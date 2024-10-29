@@ -9,11 +9,14 @@ import Foundation
 
 class MockTodosRepository: TodosRepositoryProtocol {
     
+    var isTesting: Bool = false
+    
     func fetchTodos(filter: QueryFilter,
                     sortBy: SortBy,
                     sortDirection: SortDirection) async throws -> [Todo] {
         do {
             let result: [Todo] = try FileManager.loadJson(fileName: "Todos")
+            try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
             
             return result.filter(filter.filter()).sorted(by: sortBy.comparator(direction: sortDirection))
         } catch {
@@ -25,6 +28,7 @@ class MockTodosRepository: TodosRepositoryProtocol {
     func getTodo(_ id: String) async throws -> Todo {
         do {
             let result: [Todo] = try FileManager.loadJson(fileName: "Todos")
+            try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
             
             return result.randomElement()!
         } catch {
@@ -36,6 +40,8 @@ class MockTodosRepository: TodosRepositoryProtocol {
     func createTodo(taskDescription: String,
                     createdDate: Date,
                     dueDate: Date) async throws -> Todo {
+        try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
+        
         return .init(id: UUID().uuidString,
                      taskDescription: taskDescription,
                      createdDate: createdDate,
@@ -58,6 +64,8 @@ class MockTodosRepository: TodosRepositoryProtocol {
             todoToUpdate.taskDescription = taskDescription
             todoToUpdate.dueDate = dueDate
             
+            try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
+            
             return todoToUpdate
         } catch {
             print(error)
@@ -72,6 +80,8 @@ class MockTodosRepository: TodosRepositoryProtocol {
             guard let todoToDelete = todos.first(where: { $0.id == id }) else {
                 throw NetworkError.custom(message: "No Todo Found.")
             }
+            
+            try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
             
             return todoToDelete
         } catch {

@@ -15,4 +15,17 @@ extension View {
     func customTextField(title: String) -> some View {
         self.modifier(TextFieldModifier(title: title))
     }
+    
+    func working(uiState: UIState) -> some View {
+        ZStack {
+            self
+            
+            if uiState == .working {
+                Color.white.opacity(0.5)
+                
+                ProgressView()
+            }
+        }
+        .disabled(uiState == .working)
+    }
 }
