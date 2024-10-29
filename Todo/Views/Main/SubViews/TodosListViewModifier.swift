@@ -18,12 +18,12 @@ struct TodosListViewModifier: ViewModifier {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        viewModel.showSettings = true
+                        viewModel.showSettingsSheet = true
                     } label: {
                         Image(systemName: "gear")
                             .font(.system(.title))
                     }
-
+                    
                 }
                 
                 ToolbarItem(placement: .principal) {
@@ -32,17 +32,24 @@ struct TodosListViewModifier: ViewModifier {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(.title))
+                    Button {
+                        viewModel.showCreateSheet = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(.title))
+                    }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $viewModel.showSettings, onDismiss: {
+            .sheet(isPresented: $viewModel.showSettingsSheet, onDismiss: {
                 Task {
-                    await viewModel.fetchTodos()
+//                    await viewModel.fetchTodos()
                 }
             }) {
                 SettingsView(todosListViewModel: viewModel)
+            }
+            .sheet(isPresented: $viewModel.showCreateSheet) {
+                CreateTodoView()
             }
     }
 }

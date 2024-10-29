@@ -15,7 +15,7 @@ struct TodosListView: View {
             ScrollView {
                 LazyVStack {
                     ForEach(viewModel.todos) { todo in
-                        TodoView(todo: todo)
+                        TodoView(todo: todo, viewModel: viewModel)
                     }
                 }
             }

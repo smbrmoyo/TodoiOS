@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct TodoView: View {
-    let todo: Todo
+    var todo: Todo
+    @ObservedObject var viewModel: TodosListViewModel
     
     var body: some View {
         ZStack {
@@ -16,9 +17,14 @@ struct TodoView: View {
                 .fill(Color.background)
             
             HStack {
-                Image("Vector")
-                    .padding()
-                                
+                NavigationLink {
+                    EditTodoView(todo: todo, viewModel: viewModel)
+                } label: {
+                    Image("Vector")
+                        .padding()
+                }
+                .frame(height: 100)
+                  
                 VStack(alignment: .leading) {
                     Text(todo.taskDescription)
                         .fontWeight(.medium)

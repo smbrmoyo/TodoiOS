@@ -20,7 +20,7 @@ struct SettingsView: View {
                 SortDirectionView(sortDirection: $todosListViewModel.sortDirection)
                 
                 Button("Save") {
-                    todosListViewModel.showSettings = false
+                    todosListViewModel.showSettingsSheet = false
                 }
                 .buttonStyle(.borderedProminent)
                 

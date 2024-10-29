@@ -16,7 +16,9 @@ class TodosListViewModel: ObservableObject {
     @Published var selectedFilter: QueryFilter = .all
     @Published var sortBy: SortBy = .due
     @Published var sortDirection: SortDirection = .ascending
-    @Published var showSettings: Bool = false
+    @Published var showSettingsSheet: Bool = false
+    @Published var showCreateSheet: Bool = false
+    @Published var showEditSheet: Bool = false
     
     // MARK: - Initializer
     
@@ -28,13 +30,31 @@ class TodosListViewModel: ObservableObject {
     
     @MainActor
     func fetchTodos() async {
-        print("called")
         do {
             todos = try await repository.fetchTodos(filter: selectedFilter,
                                                     sortBy: sortBy,
                                                     sortDirection: sortDirection)
         } catch {
             print(error)
+        }
+    }
+    
+    @MainActor
+    func updateTodo(todo: Todo) async -> Bool {
+        do {
+            let result = try await repository.updateTodo(id: todo.id,
+                                                    taskDescription: todo.taskDescription,
+                                                    dueDate: todo.dueDate,
+                                                    completed: todo.completed)
+            
+            guard let index = todos.firstIndex(where: { $0.id == result.id }) else { return false }
+            
+            todos[index] = result
+
+            return true
+        } catch {
+            print(error)
+            return false
         }
     }
 }
