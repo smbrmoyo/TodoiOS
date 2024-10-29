@@ -8,15 +8,17 @@
 import SwiftUI
 
 struct TodosListView: View {
-    @StateObject var viewModel: TodosListViewModel = TodosListViewModel(repository: MockTodosRepository())
+    @StateObject var viewModel: TodosListViewModel = .init(repository: MockTodosRepository())
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack {
-                    ForEach(viewModel.todos) { todo in
-                        TodoView(todo: todo, viewModel: viewModel)
-                    }
+            Group {
+                if viewModel.uiState == .loading {
+                    TodosListLoadingView()
+                } else if viewModel.todos.isEmpty {
+                    TodosListEmptyView()
+                } else {
+                    TodosListIdleView(viewModel: viewModel)
                 }
             }
             .modifier(TodosListViewModifier(viewModel: viewModel))

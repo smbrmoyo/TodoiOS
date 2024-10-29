@@ -23,7 +23,6 @@ struct TodosListViewModifier: ViewModifier {
                         Image(systemName: "gear")
                             .font(.system(.title))
                     }
-                    
                 }
                 
                 ToolbarItem(placement: .principal) {
@@ -43,7 +42,7 @@ struct TodosListViewModifier: ViewModifier {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $viewModel.showSettingsSheet, onDismiss: {
                 Task {
-//                    await viewModel.fetchTodos()
+                    await viewModel.fetchTodos()
                 }
             }) {
                 SettingsView(todosListViewModel: viewModel)
