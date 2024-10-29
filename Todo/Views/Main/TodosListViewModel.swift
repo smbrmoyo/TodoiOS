@@ -7,7 +7,6 @@
 
 import Foundation
 
-@MainActor
 class TodosListViewModel: ObservableObject {
     
     // MARK: - Properties
@@ -27,6 +26,7 @@ class TodosListViewModel: ObservableObject {
     
     // MARK: - Functions
     
+    @MainActor
     func fetchTodos() async {
         print("called")
         do {

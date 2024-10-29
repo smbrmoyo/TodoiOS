@@ -13,7 +13,7 @@ struct TodoView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
-                .fill(.gray.opacity(0.3))
+                .fill(Color.background)
             
             HStack {
                 Image("Vector")
