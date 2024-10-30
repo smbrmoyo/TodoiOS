@@ -28,13 +28,7 @@ struct CreateTodoView: View {
                 
                 Spacer()
             }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Create")
-                        .font(.largeTitle)
-                }
-            }
-            .working(uiState: viewModel.uiState)
+            .modifier(CreateTodoViewModifier(viewModel: viewModel))
         }
     }
 }

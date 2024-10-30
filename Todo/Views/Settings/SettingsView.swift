@@ -26,13 +26,7 @@ struct SettingsView: View {
                 
                 Spacer()
             }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Settings")
-                        .font(.largeTitle)
-                }
-            }
-            .navigationBarTitleDisplayMode(.inline)
+            .modifier(SettingsViewModifier(todosListViewModel: todosListViewModel))
         }
     }
 }

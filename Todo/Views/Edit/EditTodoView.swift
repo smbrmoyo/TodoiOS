@@ -39,13 +39,7 @@ struct EditTodoView: View {
                 
                 Spacer()
             }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Edit")
-                        .font(.largeTitle)
-                }
-            }
-            .working(uiState: viewModel.uiState)
+            .modifier(EditTodoViewModifier(viewModel: viewModel))
         }
     }
 }

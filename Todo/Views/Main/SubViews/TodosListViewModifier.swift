@@ -15,6 +15,12 @@ struct TodosListViewModifier: ViewModifier {
             .task {
                 await viewModel.fetchTodos()
             }
+            .refreshable {
+                Task {
+                    viewModel.isRefreshing = true
+                    await viewModel.fetchTodos()
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -51,5 +57,16 @@ struct TodosListViewModifier: ViewModifier {
                 CreateTodoView()
             }
             .working(uiState: viewModel.uiState)
+            .alert("Error", isPresented: $viewModel.showErrorAlert) {
+                Button("OK") {}
+                
+                Button("Retry") {
+                    Task {
+                        await viewModel.fetchTodos()
+                    }
+                }
+            } message: {
+                Text(viewModel.errorMessage)
+            }
     }
 }

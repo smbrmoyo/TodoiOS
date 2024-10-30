@@ -42,13 +42,15 @@ protocol TodosRepositoryProtocol {
      - Parameters:
         - taskDescription: A `String` describing the task to be completed.
         - dueDate: A `Date` specifying the deadline for the todo.
+        - completed: A `Bool` indicating whether the todo has been completed.
      
      - Returns: The newly created `Todo` object.
      
      - Throws: An error if the creation process fails.
      */
     func createTodo(taskDescription: String,
-                    dueDate: Date) async throws -> Todo
+                    dueDate: Date,
+                    completed: Bool) async throws -> Todo
     
     /**
      Updates an existing todo with new values for description, due date, and completion status.
@@ -74,8 +76,7 @@ protocol TodosRepositoryProtocol {
      Deletes a todo by its unique identifier.
      
      - Parameter id: The unique identifier of the todo to delete.
-     - Returns: The deleted `Todo` object.
      - Throws: An error if the deletion process fails or the todo cannot be found.
      */
-    func deleteTodo(id: String) async throws -> Todo
+    func deleteTodo(id: String) async throws
 }

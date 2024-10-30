@@ -33,7 +33,7 @@ func makeRequest<T: Codable>(
     request.httpMethod = method
     request.allHTTPHeaderFields = headers
     
-    if method == "POST", let body = body {
+    if method == "POST" || method == "PUT", let body = body {
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -48,7 +48,7 @@ func makeRequest<T: Codable>(
         throw NetworkError.unknownError
     }
     
-    guard statusCode == 200 else {
+    guard (200...299).contains(statusCode) else {
         throw handleAPIError(forStatusCode: statusCode)
     }
     

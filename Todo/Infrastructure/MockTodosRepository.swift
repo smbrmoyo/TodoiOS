@@ -39,14 +39,15 @@ final class MockTodosRepository: TodosRepositoryProtocol {
     }
     
     func createTodo(taskDescription: String,
-                    dueDate: Date) async throws -> Todo {
+                    dueDate: Date,
+                    completed: Bool) async throws -> Todo {
         try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
         
         return .init(id: UUID().uuidString,
                      taskDescription: taskDescription,
                      createdDate: Date.now,
                      dueDate: dueDate,
-                     completed: false)
+                     completed: completed)
     }
     
     func updateTodo(id: String,
@@ -74,17 +75,15 @@ final class MockTodosRepository: TodosRepositoryProtocol {
         }
     }
     
-    func deleteTodo(id: String) async throws -> Todo {
+    func deleteTodo(id: String) async throws {
         do {
             let todos: [Todo] = try FileManager.loadJson(fileName: "Todos")
             
-            guard let todoToDelete = todos.first(where: { $0.id == id }) else {
+            guard let _ = todos.first(where: { $0.id == id }) else {
                 throw NetworkError.custom(message: "No Todo Found.")
             }
             
             try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
-            
-            return todoToDelete
         } catch {
             print(error)
             throw error

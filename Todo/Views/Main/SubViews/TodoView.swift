@@ -47,9 +47,14 @@ struct TodoView: View {
                         .resizable()
                         .frame(width: 30, height: 30)
                     
-                    Image("delete")
-                        .resizable()
-                        .frame(width: 30, height: 30)
+                    Button {
+                        viewModel.showDeleteAlert = true
+                    } label: {
+                        Image("delete")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                    }
+
                 }
             }
             .padding(.horizontal, 8)
@@ -57,6 +62,16 @@ struct TodoView: View {
         .frame(height: 100)
         .padding(.vertical, 4)
         .padding(.horizontal, 16)
+        .alert("Do you want to delete this Task?",
+               isPresented: $viewModel.showDeleteAlert) {
+            Button("Delete", role: .destructive) {
+                Task {
+                    await viewModel.deleteTodo(id: todo.id)
+                }
+            }
+            
+            Button("Cancel", role: .cancel) {}
+        }
     }
 }
 

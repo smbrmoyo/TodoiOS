@@ -17,6 +17,9 @@ final class CreateTodoViewModel: ObservableObject {
     @Published var dueDate: Date = .now
     @Published var uiState: UIState = .idle
     
+    @Published var showErrorAlert: Bool = false
+    @Published private(set) var errorMessage: String = ""
+    
     // MARK: - Initializer
     
     init(repository: TodosRepositoryProtocol = TodosRepository()) {
@@ -30,10 +33,12 @@ final class CreateTodoViewModel: ObservableObject {
         uiState = .working
         do {
             let _ = try await repository.createTodo(taskDescription: taskDescription,
-                                                    dueDate: dueDate)
+                                                    dueDate: dueDate,
+                                                    completed: false)
             uiState = .idle
         } catch {
-            print(error)
+            errorMessage = "There was error creating your Tasks."
+            showErrorAlert = true
             uiState = .idle
         }
     }

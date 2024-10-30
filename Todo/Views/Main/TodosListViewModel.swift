@@ -15,12 +15,18 @@ final class TodosListViewModel: ObservableObject {
     
     @Published private(set) var todos: [Todo] = []
     @Published var uiState: UIState = .idle
+    @Published var isRefreshing: Bool = false
     @Published var selectedFilter: QueryFilter = .all
     @Published var sortBy: SortBy = .due
     @Published var sortDirection: SortDirection = .ascending
+    
     @Published var showSettingsSheet: Bool = false
     @Published var showCreateSheet: Bool = false
     @Published var showEditSheet: Bool = false
+    
+    @Published var showDeleteAlert: Bool = false
+    @Published var showErrorAlert: Bool = false
+    @Published private(set) var errorMessage: String = ""
     
     private var lastSelectedFilter: QueryFilter = .all
     private var lastSortBy: SortBy = .due
@@ -37,7 +43,7 @@ final class TodosListViewModel: ObservableObject {
     
     @MainActor
     func fetchTodos() async {
-        uiState = todos.isEmpty ? .loading : .working
+        uiState = todos.isEmpty ? .loading : isRefreshing ? .idle : .working
         do {
             todos = try await repository.fetchTodos(lastKey: lastKey,
                                                     filter: selectedFilter,
@@ -47,17 +53,21 @@ final class TodosListViewModel: ObservableObject {
             lastSelectedFilter = selectedFilter
             lastSortBy = sortBy
             lastSortDirection = sortDirection
+            isRefreshing = false
         } catch {
             uiState = .idle
-            print(error)
+            isRefreshing = false
+            errorMessage = "There was error fetching your Tasks."
+            showSettingsSheet = false
+            showErrorAlert = true
         }
     }
     
     @MainActor
     func fetchTodosIfNeeded() async {
         guard selectedFilter != lastSelectedFilter ||
-        sortBy != lastSortBy ||
-        sortDirection != lastSortDirection else {
+                sortBy != lastSortBy ||
+                sortDirection != lastSortDirection else {
             return
         }
         
@@ -81,7 +91,28 @@ final class TodosListViewModel: ObservableObject {
             
             return true
         } catch {
-            print(error)
+            errorMessage = "There was error updating your Task."
+            showErrorAlert = true
+            uiState = .idle
+            return false
+        }
+    }
+    
+    @MainActor
+    func deleteTodo(id: String) async -> Bool {
+        do {
+            uiState = .working
+            try await repository.deleteTodo(id: id)
+            
+            guard let index = todos.firstIndex(where: { $0.id == id }) else { return false }
+            
+            todos.remove(at: index)
+            uiState = .idle
+            
+            return true
+        } catch {
+            errorMessage = "There was error deleting your Task."
+            showErrorAlert = true
             uiState = .idle
             return false
         }

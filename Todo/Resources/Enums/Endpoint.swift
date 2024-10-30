@@ -8,7 +8,7 @@
 import Foundation
 
 enum Endpoint {
-    private var baseURL: String { "https://todobackend-1056073512918.europe-central2.run.app/tasks/" }
+    private var baseURL: String { "http://localhost:3000/tasks/" }
     
     case getTodo(String), fetchTodos, createTodo, updateTodo(String), deleteTodo(String)
     

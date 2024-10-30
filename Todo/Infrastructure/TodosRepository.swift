@@ -38,12 +38,15 @@ final class TodosRepository: TodosRepositoryProtocol {
     }
     
     func createTodo(taskDescription: String,
-                    dueDate: Date) async throws -> Todo {
+                    dueDate: Date,
+                    completed: Bool) async throws -> Todo {
         do {
             let result: TodoResponse = try await makeRequest(from: Endpoint.createTodo.urlString,
                                                              method: Endpoint.createTodo.httpMethod,
-                                                             body: ["taskDecription": taskDescription,
-                                                                    "dueDate": dueDate])
+                                                             body: ["taskDescription": taskDescription,
+                                                                    "createdDate": Date.now.ISO8601Format(),
+                                                                    "dueDate": dueDate.ISO8601Format(),
+                                                                    "completed": String(completed)])
             
             return result.data
         } catch {
@@ -60,11 +63,11 @@ final class TodosRepository: TodosRepositoryProtocol {
         do {
             let result: TodoResponse = try await makeRequest(from: Endpoint.updateTodo(id).urlString,
                                                              method: Endpoint.updateTodo("").httpMethod,
-                                                             parameters: ["id": id,
-                                                                          "taskDecription": taskDescription,
-                                                                          "createdDate": createdDate.ISO8601Format(),
-                                                                          "dueDate": dueDate.ISO8601Format(),
-                                                                          "completed": String(completed)])
+                                                             body: ["id": id,
+                                                                    "taskDescription": taskDescription,
+                                                                    "createdDate": createdDate.ISO8601Format(),
+                                                                    "dueDate": dueDate.ISO8601Format(),
+                                                                    "completed": String(completed)])
             
             return result.data
         } catch {
@@ -73,13 +76,15 @@ final class TodosRepository: TodosRepositoryProtocol {
         }
     }
     
-    func deleteTodo(id: String) async throws -> Todo {
+    func deleteTodo(id: String) async throws {
         do {
-            let result: TodoResponse = try await makeRequest(from: Endpoint.deleteTodo(id).urlString,
-                                                             method: Endpoint.deleteTodo("").httpMethod,
-                                                             parameters: ["id": id])
+            let result: DeleteTodoResponse = try await makeRequest(from: Endpoint.deleteTodo(id).urlString,
+                                                                   method: Endpoint.deleteTodo("").httpMethod,
+                                                                   parameters: ["id": id])
             
-            return result.data
+            guard result.status == .SUCCESS else {
+                throw NetworkError.unknownError
+            }
         } catch {
             print(error)
             throw error
