@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CreateTodoView: View {
-    @StateObject var viewModel: CreateTodoViewModel = .init(repository: MockTodosRepository())
+    @StateObject var viewModel: CreateTodoViewModel = .init()
     
     var body: some View {
         NavigationStack {
@@ -40,5 +40,5 @@ struct CreateTodoView: View {
 }
 
 #Preview {
-    CreateTodoView()
+    CreateTodoView(viewModel: CreateTodoViewModel(repository: MockTodosRepository()))
 }

@@ -12,6 +12,16 @@ enum SortBy: String, Identifiable, CaseIterable {
     
     var id: String { rawValue }
     
+    /// Computed property that takes a SortDirection and returns the sort string
+    func sortKey(with direction: SortDirection) -> String {
+        switch direction {
+        case .ascending:
+            return "+\(self.rawValue)Date"
+        case .descending:
+            return "-\(self.rawValue)Date"
+        }
+    }
+    
     /// Returns a sorting closure that compares two `Todo` objects based on `SortBy` and `SortDirection`.
     func comparator(direction: SortDirection) -> (Todo, Todo) -> Bool {
         switch (self, direction) {

@@ -7,11 +7,12 @@
 
 import Foundation
 
-class MockTodosRepository: TodosRepositoryProtocol {
+final class MockTodosRepository: TodosRepositoryProtocol {
     
     var isTesting: Bool = false
     
-    func fetchTodos(filter: QueryFilter,
+    func fetchTodos(lastKey: String,
+                    filter: QueryFilter,
                     sortBy: SortBy,
                     sortDirection: SortDirection) async throws -> [Todo] {
         do {
@@ -38,13 +39,12 @@ class MockTodosRepository: TodosRepositoryProtocol {
     }
     
     func createTodo(taskDescription: String,
-                    createdDate: Date,
                     dueDate: Date) async throws -> Todo {
         try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
         
         return .init(id: UUID().uuidString,
                      taskDescription: taskDescription,
-                     createdDate: createdDate,
+                     createdDate: Date.now,
                      dueDate: dueDate,
                      completed: false)
     }
@@ -52,6 +52,7 @@ class MockTodosRepository: TodosRepositoryProtocol {
     func updateTodo(id: String,
                     taskDescription: String,
                     dueDate: Date,
+                    createdDate: Date,
                     completed: Bool) async throws -> Todo {
         do {
             let todos: [Todo] = try FileManager.loadJson(fileName: "Todos")

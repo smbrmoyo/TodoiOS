@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CreateTodoViewModel: ObservableObject {
+final class CreateTodoViewModel: ObservableObject {
     
     // MARK: - Properties
     
@@ -19,7 +19,7 @@ class CreateTodoViewModel: ObservableObject {
     
     // MARK: - Initializer
     
-    init(repository: TodosRepositoryProtocol) {
+    init(repository: TodosRepositoryProtocol = TodosRepository()) {
         self.repository = repository
     }
     
@@ -30,7 +30,6 @@ class CreateTodoViewModel: ObservableObject {
         uiState = .working
         do {
             let _ = try await repository.createTodo(taskDescription: taskDescription,
-                                                    createdDate: .now,
                                                     dueDate: dueDate)
             uiState = .idle
         } catch {

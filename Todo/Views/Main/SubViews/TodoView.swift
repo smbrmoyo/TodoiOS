@@ -31,9 +31,11 @@ struct TodoView: View {
                     
                     Text("Due: \(todo.dueDate.formatted(date: .long, time: .omitted))")
                         .font(.subheadline)
+                        .fontWeight(viewModel.sortBy == .due ? .medium : .regular)
                     
                     Text("Created: \(todo.createdDate.formatted(date: .long, time: .omitted))")
                         .font(.subheadline)
+                        .fontWeight(viewModel.sortBy == .created ? .medium : .regular)
                 }
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -41,7 +43,7 @@ struct TodoView: View {
                 Spacer()
                 
                 HStack(spacing: 12) {
-                    Image("Check-box")
+                    Image(todo.completed ? "Check-box" : "Check-box-outline-blank")
                         .resizable()
                         .frame(width: 30, height: 30)
                     

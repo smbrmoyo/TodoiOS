@@ -13,6 +13,7 @@ protocol TodosRepositoryProtocol {
      Fetches a list of todos based on specified filter, sorting criteria, and sort direction.
      
      - Parameters:
+        - lastKey: The last evaluated key from the previous query, used for pagination.
         - filter: A `QueryFilter` specifying criteria to filter todos.
         - sortBy: A `SortBy` specifying the attribute by which to sort the todos.
         - sortDirection: A `SortDirection` specifying whether sorting is ascending or descending.
@@ -21,7 +22,8 @@ protocol TodosRepositoryProtocol {
      
      - Throws: An error if the fetching process encounters an issue.
      */
-    func fetchTodos(filter: QueryFilter,
+    func fetchTodos(lastKey: String,
+                    filter: QueryFilter,
                     sortBy: SortBy,
                     sortDirection: SortDirection) async throws -> [Todo]
     
@@ -39,7 +41,6 @@ protocol TodosRepositoryProtocol {
      
      - Parameters:
         - taskDescription: A `String` describing the task to be completed.
-        - createdDate: A `Date` specifying when the todo was created.
         - dueDate: A `Date` specifying the deadline for the todo.
      
      - Returns: The newly created `Todo` object.
@@ -47,7 +48,6 @@ protocol TodosRepositoryProtocol {
      - Throws: An error if the creation process fails.
      */
     func createTodo(taskDescription: String,
-                    createdDate: Date,
                     dueDate: Date) async throws -> Todo
     
     /**
@@ -57,6 +57,7 @@ protocol TodosRepositoryProtocol {
         - id: The unique identifier of the todo to update.
         - taskDescription: A `String` describing the task to be completed.
         - dueDate: A `Date` specifying the updated deadline for the todo.
+        - createdDate: A `Date` specifying when the todo was created.
         - completed: A `Bool` indicating whether the todo has been completed.
      
      - Returns: The updated `Todo` object.
@@ -66,6 +67,7 @@ protocol TodosRepositoryProtocol {
     func updateTodo(id: String,
                     taskDescription: String,
                     dueDate: Date,
+                    createdDate: Date,
                     completed: Bool) async throws -> Todo
     
     /**

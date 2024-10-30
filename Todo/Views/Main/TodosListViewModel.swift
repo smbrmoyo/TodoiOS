@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TodosListViewModel: ObservableObject {
+final class TodosListViewModel: ObservableObject {
     
     // MARK: - Properties
     
@@ -25,10 +25,11 @@ class TodosListViewModel: ObservableObject {
     private var lastSelectedFilter: QueryFilter = .all
     private var lastSortBy: SortBy = .due
     private var lastSortDirection: SortDirection = .ascending
+    private var lastKey: String = ""
     
     // MARK: - Initializer
     
-    init(repository: TodosRepositoryProtocol) {
+    init(repository: TodosRepositoryProtocol = TodosRepository()) {
         self.repository = repository
     }
     
@@ -38,7 +39,8 @@ class TodosListViewModel: ObservableObject {
     func fetchTodos() async {
         uiState = todos.isEmpty ? .loading : .working
         do {
-            todos = try await repository.fetchTodos(filter: selectedFilter,
+            todos = try await repository.fetchTodos(lastKey: lastKey,
+                                                    filter: selectedFilter,
                                                     sortBy: sortBy,
                                                     sortDirection: sortDirection)
             uiState = .idle
@@ -69,6 +71,7 @@ class TodosListViewModel: ObservableObject {
             let result = try await repository.updateTodo(id: todo.id,
                                                          taskDescription: todo.taskDescription,
                                                          dueDate: todo.dueDate,
+                                                         createdDate: todo.createdDate,
                                                          completed: todo.completed)
             
             guard let index = todos.firstIndex(where: { $0.id == result.id }) else { return false }

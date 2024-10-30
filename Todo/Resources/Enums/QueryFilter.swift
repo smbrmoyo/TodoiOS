@@ -12,6 +12,14 @@ enum QueryFilter: String, Identifiable, CaseIterable {
     
     var id: String { rawValue }
     
+    var queryParameter: String {
+        switch self {
+        case .all: ""
+        case .complete: "true"
+        case .incomplete: "false"
+        }
+    }
+    
     /// Returns a closure that filters `Todo` items based on the `QueryFilter` case.
     func filter() -> (Todo) -> Bool {
         switch self {

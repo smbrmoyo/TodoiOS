@@ -14,6 +14,7 @@ struct CustomDatePicker: View {
         HStack {
             DatePicker("",
                        selection: $date,
+                       in: Date()...,
                        displayedComponents: .date)
             .datePickerStyle(.compact)
             .labelsHidden()

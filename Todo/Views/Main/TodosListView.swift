@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TodosListView: View {
-    @StateObject var viewModel: TodosListViewModel = .init(repository: MockTodosRepository())
+    @StateObject var viewModel: TodosListViewModel = .init()
     
     var body: some View {
         NavigationStack {
