@@ -27,6 +27,7 @@ final class TodosListViewModel: ObservableObject {
     @Published var showDeleteAlert: Bool = false
     @Published var showErrorAlert: Bool = false
     @Published private(set) var errorMessage: String = ""
+    @Published private(set) var disabled: Bool = false
     
     private var lastSelectedFilter: QueryFilter = .all
     private var lastSortBy: SortBy = .due
@@ -76,6 +77,10 @@ final class TodosListViewModel: ObservableObject {
     
     @MainActor
     func updateTodo(todo: Todo) async -> Bool {
+        guard todo.dueDate > .now || !todo.taskDescription.isEmpty else {
+            disabled = true
+            return false
+        }
         do {
             uiState = .working
             let result = try await repository.updateTodo(id: todo.id,

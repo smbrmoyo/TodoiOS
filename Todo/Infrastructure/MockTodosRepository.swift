@@ -10,11 +10,29 @@ import Foundation
 final class MockTodosRepository: TodosRepositoryProtocol {
     
     var isTesting: Bool = false
+    var shouldFail: Bool = false
     
     func fetchTodos(lastKey: String,
                     filter: QueryFilter,
                     sortBy: SortBy,
                     sortDirection: SortDirection) async throws -> [Todo] {
+        
+        guard !shouldFail else {
+            let errors: [NetworkError] = [
+                .badRequest,
+                .unauthorized,
+                .forbidden,
+                .notFound,
+                .badGateway,
+                .serverError,
+                .serviceUnavailable,
+                .unknownError,
+                .custom(message: "A random custom error occurred.")
+            ]
+            
+            throw errors.randomElement()!
+        }
+        
         do {
             let result: [Todo] = try FileManager.loadJson(fileName: "Todos")
             try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
@@ -27,6 +45,23 @@ final class MockTodosRepository: TodosRepositoryProtocol {
     }
     
     func getTodo(_ id: String) async throws -> Todo {
+        
+        guard !shouldFail else {
+            let errors: [NetworkError] = [
+                .badRequest,
+                .unauthorized,
+                .forbidden,
+                .notFound,
+                .badGateway,
+                .serverError,
+                .serviceUnavailable,
+                .unknownError,
+                .custom(message: "A random custom error occurred.")
+            ]
+            
+            throw errors.randomElement()!
+        }
+        
         do {
             let result: [Todo] = try FileManager.loadJson(fileName: "Todos")
             try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
@@ -41,6 +76,23 @@ final class MockTodosRepository: TodosRepositoryProtocol {
     func createTodo(taskDescription: String,
                     dueDate: Date,
                     completed: Bool) async throws -> Todo {
+        
+        guard !shouldFail else {
+            let errors: [NetworkError] = [
+                .badRequest,
+                .unauthorized,
+                .forbidden,
+                .notFound,
+                .badGateway,
+                .serverError,
+                .serviceUnavailable,
+                .unknownError,
+                .custom(message: "A random custom error occurred.")
+            ]
+            
+            throw errors.randomElement()!
+        }
+        
         try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
         
         return .init(id: UUID().uuidString,
@@ -55,6 +107,23 @@ final class MockTodosRepository: TodosRepositoryProtocol {
                     dueDate: Date,
                     createdDate: Date,
                     completed: Bool) async throws -> Todo {
+        
+        guard !shouldFail else {
+            let errors: [NetworkError] = [
+                .badRequest,
+                .unauthorized,
+                .forbidden,
+                .notFound,
+                .badGateway,
+                .serverError,
+                .serviceUnavailable,
+                .unknownError,
+                .custom(message: "A random custom error occurred.")
+            ]
+            
+            throw errors.randomElement()!
+        }
+        
         do {
             let todos: [Todo] = try FileManager.loadJson(fileName: "Todos")
             
@@ -76,6 +145,23 @@ final class MockTodosRepository: TodosRepositoryProtocol {
     }
     
     func deleteTodo(id: String) async throws {
+        
+        guard !shouldFail else {
+            let errors: [NetworkError] = [
+                .badRequest,
+                .unauthorized,
+                .forbidden,
+                .notFound,
+                .badGateway,
+                .serverError,
+                .serviceUnavailable,
+                .unknownError,
+                .custom(message: "A random custom error occurred.")
+            ]
+            
+            throw errors.randomElement()!
+        }
+        
         do {
             let todos: [Todo] = try FileManager.loadJson(fileName: "Todos")
             

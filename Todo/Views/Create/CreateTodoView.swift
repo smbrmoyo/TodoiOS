@@ -25,6 +25,7 @@ struct CreateTodoView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(viewModel.disabled)
                 
                 Spacer()
             }

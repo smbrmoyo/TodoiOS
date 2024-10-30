@@ -8,7 +8,7 @@
 import Foundation
 
 /// `Todo` Model
-struct Todo: Identifiable, Codable {
+struct Todo: Identifiable, Codable, Equatable {
     let id: String
     var taskDescription: String
     var createdDate, dueDate: Date

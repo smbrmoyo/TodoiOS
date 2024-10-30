@@ -19,6 +19,9 @@ final class CreateTodoViewModel: ObservableObject {
     
     @Published var showErrorAlert: Bool = false
     @Published private(set) var errorMessage: String = ""
+    var disabled: Bool {
+        taskDescription.isEmpty
+    }
     
     // MARK: - Initializer
     
@@ -36,6 +39,8 @@ final class CreateTodoViewModel: ObservableObject {
                                                     dueDate: dueDate,
                                                     completed: false)
             uiState = .idle
+            taskDescription = ""
+            dueDate = .now
         } catch {
             errorMessage = "There was error creating your Tasks."
             showErrorAlert = true

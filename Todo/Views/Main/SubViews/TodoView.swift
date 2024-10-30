@@ -8,8 +8,13 @@
 import SwiftUI
 
 struct TodoView: View {
-    var todo: Todo
+    @State private var todo: Todo
     @ObservedObject var viewModel: TodosListViewModel
+
+    init(todo: Todo, viewModel: TodosListViewModel) {
+        self._todo = State(initialValue: todo)
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         ZStack {
@@ -32,6 +37,7 @@ struct TodoView: View {
                     Text("Due: \(todo.dueDate.formatted(date: .long, time: .omitted))")
                         .font(.subheadline)
                         .fontWeight(viewModel.sortBy == .due ? .medium : .regular)
+                        .foregroundStyle(todo.dueDate < .now ? .gray : .accent)
                     
                     Text("Created: \(todo.createdDate.formatted(date: .long, time: .omitted))")
                         .font(.subheadline)
@@ -43,9 +49,22 @@ struct TodoView: View {
                 Spacer()
                 
                 HStack(spacing: 12) {
-                    Image(todo.completed ? "Check-box" : "Check-box-outline-blank")
-                        .resizable()
-                        .frame(width: 30, height: 30)
+                    Button {
+                        Task {
+                            todo.completed.toggle()
+                            let result = await viewModel.updateTodo(todo: todo)
+                            
+                            guard result else {
+                                todo.completed.toggle()
+                                return
+                            }
+                        }
+                    } label: {
+                        Image(todo.completed ? "Check-box" : "Check-box-outline-blank")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                    }
+
                     
                     Button {
                         viewModel.showDeleteAlert = true
