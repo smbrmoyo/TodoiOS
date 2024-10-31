@@ -18,19 +18,10 @@ final class TodoViewModel: ObservableObject {
     private(set) var dueDate: Date
     private(set) var createdDate: Date
     @Published private(set) var completed: Bool
+    
     @Published var uiState: UIState = .idle
-    @Published var isRefreshing: Bool = false
-    @Published var selectedFilter: QueryFilter = .all
-    @Published var sortBy: SortBy = .due
-    @Published var sortDirection: SortDirection = .ascending
-    
-    @Published var showSettingsSheet: Bool = false
-    @Published var showCreateSheet: Bool = false
-    
-    @Published var showDeleteAlert: Bool = false
     @Published var showErrorAlert: Bool = false
     @Published private(set) var errorMessage: String = ""
-    @Published private(set) var disabled: Bool = false
     
     // MARK: - Initializer
     

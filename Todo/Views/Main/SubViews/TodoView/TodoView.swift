@@ -14,7 +14,7 @@ struct TodoView: View {
     
     init(todo: Todo,
          viewModel: TodosListViewModel,
-         repository: TodosRepositoryProtocol = MockTodosRepository()) {
+         repository: TodosRepositoryProtocol = TodosRepository()) {
         self._todo = State(initialValue: todo)
         self._todoViewModel = StateObject(wrappedValue: TodoViewModel(todo: todo, repository: repository))
         self.viewModel = viewModel

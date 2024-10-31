@@ -115,13 +115,17 @@ final class MockTodosRepositoryTests: XCTestCase {
     func testUpdateTodo_Success() async throws {
         // Given
         mockRepository.shouldFail = false
-        let todo = mockTodos.randomElement()!
+        var todo = mockTodos.randomElement()!
         let taskDescription = "Updated Task"
         let dueDate = Date().addingTimeInterval(172800)
         let completed = true
         
+        todo.taskDescription = taskDescription
+        todo.dueDate = dueDate
+        todo.completed = completed
+        
         // When
-        let updatedTodo = try await mockRepository.updateTodo(id: todo.id, taskDescription: taskDescription, dueDate: dueDate, createdDate: todo.createdDate, completed: completed)
+        let updatedTodo = try await mockRepository.updateTodo(todo: todo)
         
         // Then
         XCTAssertEqual(updatedTodo.taskDescription, taskDescription, "Updated description should match input")
@@ -132,10 +136,11 @@ final class MockTodosRepositoryTests: XCTestCase {
     func testUpdateTodo_Failure() async {
         // Given
         mockRepository.shouldFail = true
+        let todo: Todo = .init(id: "sampleID", taskDescription: "Updated Task", createdDate: Date(), dueDate: Date(), completed: true)
         
         // When/Then
         do {
-            let _ = try await mockRepository.updateTodo(id: "sampleID", taskDescription: "Updated Task", dueDate: Date(), createdDate: Date(), completed: true)
+            let _ = try await mockRepository.updateTodo(todo: todo)
             XCTFail("Expected updateTodo to throw an error")
         } catch {
             XCTAssertNotNil(error, "Expected an error to be thrown")
