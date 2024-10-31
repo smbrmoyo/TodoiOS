@@ -10,7 +10,7 @@ import Foundation
 final class MockTodosRepository: TodosRepositoryProtocol {
     
     var isTesting: Bool = false
-    var shouldFail: Bool = true
+    var shouldFail: Bool = false
     
     func fetchTodos(lastKey: FetchTodosLastKey?,
                     filter: QueryFilter,

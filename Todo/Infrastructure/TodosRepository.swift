@@ -21,10 +21,17 @@ final class TodosRepository: TodosRepositoryProtocol {
                 "sort_by": sortBy.sortKey(with: sortDirection)
             ]
             
-            if let lastKey = lastKey {
+            /// For Pagination
+            if let lastKey = lastKey, let _ = lastKey.type {
                 requestBody["lastKey"] = [
                     "id": lastKey.id,
-                    "type": lastKey.type,
+                    "type": "Todo",
+                    "\(sortBy)Date": sortBy == .due ? lastKey.dueDate : lastKey.createdDate
+                ]
+            } else if let lastKey = lastKey {
+                requestBody["lastKey"] = [
+                    "id": lastKey.id,
+                    "completed": filter.queryParameter,
                     "\(sortBy)Date": sortBy == .due ? lastKey.dueDate : lastKey.createdDate
                 ]
             }
@@ -103,19 +110,17 @@ final class TodosRepository: TodosRepositoryProtocol {
     
     func bulkCreateTodos() async {
         await withTaskGroup(of: Void.self) { group in
-            for i in 51...100 {
+            for i in 0...50 {
                 group.addTask {
-                    let taskDescription = "Task \(i)"
-                    let randomInterval = TimeInterval.random(in: 86_400...172_800)
-                    let dueDate = Date.now.addingTimeInterval(randomInterval)
+                    let dueDate = Date.now.addingTimeInterval(TimeInterval.random(in: 86_400...172_800))
                     
                     do {
-                        _ = try await self.createTodo(taskDescription: taskDescription,
+                        _ = try await self.createTodo(taskDescription: "Task \(i)",
                                                       dueDate: dueDate,
                                                       completed: false)
-                        print("Created \(taskDescription)")
+                        
                     } catch {
-                        print("Failed to create \(taskDescription): \(error)")
+                        print("Failed to create a task: \(error)")
                     }
                 }
             }

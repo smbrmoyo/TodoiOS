@@ -14,7 +14,7 @@ final class TodosListViewModel: ObservableObject {
     private let repository: TodosRepositoryProtocol
     
     @Published private(set) var todos: [Todo] = []
-    @Published var uiState: UIState = .idle
+    @Published var uiState: UIState = .loading
     @Published var isRefreshing: Bool = false
     @Published var selectedFilter: QueryFilter = .all
     @Published var sortBy: SortBy = .due
@@ -32,6 +32,7 @@ final class TodosListViewModel: ObservableObject {
     private var lastSelectedFilter: QueryFilter = .all
     private var lastSortBy: SortBy = .due
     private var lastSortDirection: SortDirection = .ascending
+    private var lastSelectedLimit: FetchTodosLimit = .ten
     private var lastKey: FetchTodosLastKey?
     var canLoadMore: Bool {
         !todos.isEmpty && lastKey != nil
@@ -71,13 +72,14 @@ final class TodosListViewModel: ObservableObject {
     }
     
     @MainActor
-    func fetchTodosIfNeeded() async {
+    func fetchTodosAfterFilter() async {
         guard selectedFilter != lastSelectedFilter ||
                 sortBy != lastSortBy ||
-                sortDirection != lastSortDirection else {
+                sortDirection != lastSortDirection ||
+        selectedLimit != lastSelectedLimit else {
             return
         }
-        
+        lastKey = nil
         await fetchTodos()
     }
     

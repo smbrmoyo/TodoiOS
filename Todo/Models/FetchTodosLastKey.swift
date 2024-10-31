@@ -8,6 +8,6 @@
 import Foundation
 
 struct FetchTodosLastKey: Codable {
-    let id, type: String
-    var createdDate, dueDate: String?
+    let id: String
+    var createdDate, dueDate, type, completed: String?
 }

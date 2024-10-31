@@ -36,7 +36,7 @@ final class TodosListViewModelTests: XCTestCase {
     
     func testInitialState() {
         XCTAssertEqual(viewModel.todos, [])
-        XCTAssertEqual(viewModel.uiState, .idle)
+        XCTAssertEqual(viewModel.uiState, .loading)
         XCTAssertEqual(viewModel.isRefreshing, false)
         XCTAssertEqual(viewModel.selectedFilter, .all)
         XCTAssertEqual(viewModel.sortBy, .due)
@@ -263,7 +263,7 @@ final class TodosListViewModelTests: XCTestCase {
         viewModel.selectedFilter = .complete
         mockRepository.shouldFail = false
         
-        let expectation = XCTestExpectation(description: "UI state should be working while fetchTodosIfNeeded is executing.")
+        let expectation = XCTestExpectation(description: "UI state should be working while fetchTodosAfterFilter is executing.")
         
         Task {
             await MainActor.run {
@@ -274,10 +274,10 @@ final class TodosListViewModelTests: XCTestCase {
         }
         
         // When
-        await viewModel.fetchTodosIfNeeded()
+        await viewModel.fetchTodosAfterFilter()
         
         // Then
-        XCTAssertEqual(viewModel.uiState, .idle, "UI state should be idle after fetchTodosIfNeeded completes.")
+        XCTAssertEqual(viewModel.uiState, .idle, "UI state should be idle after fetchTodosAfterFilter completes.")
         await fulfillment(of: [expectation], timeout: 1.0)
     }
     
