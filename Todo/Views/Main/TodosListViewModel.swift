@@ -22,7 +22,6 @@ final class TodosListViewModel: ObservableObject {
     
     @Published var showSettingsSheet: Bool = false
     @Published var showCreateSheet: Bool = false
-    @Published var showEditSheet: Bool = false
     
     @Published var showDeleteAlert: Bool = false
     @Published var showErrorAlert: Bool = false
@@ -76,6 +75,14 @@ final class TodosListViewModel: ObservableObject {
     }
     
     @MainActor
+    func refreshTodos() async {
+        guard !isRefreshing else { return }
+        
+        isRefreshing = true
+        await fetchTodos()
+    }
+    
+    @MainActor
     func updateTodo(todo: Todo) async -> Bool {
         guard todo.dueDate > .now || !todo.taskDescription.isEmpty else {
             disabled = true
@@ -121,5 +128,17 @@ final class TodosListViewModel: ObservableObject {
             uiState = .idle
             return false
         }
+    }
+    
+    func toggleSettingsSheet(_ value: Bool) {
+        showSettingsSheet = value
+    }
+    
+    func toggleCreateSheet(_ value: Bool) {
+        showCreateSheet = value
+    }
+    
+    func toggleDeleteAlert(_ value: Bool) {
+        showDeleteAlert = value
     }
 }

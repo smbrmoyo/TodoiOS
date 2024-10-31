@@ -35,7 +35,6 @@ final class TodosListViewModelTests: XCTestCase {
     // MARK: - Test for Values
     
     func testInitialState() {
-        
         XCTAssertEqual(viewModel.todos, [])
         XCTAssertEqual(viewModel.uiState, .idle)
         XCTAssertEqual(viewModel.isRefreshing, false)
@@ -45,7 +44,6 @@ final class TodosListViewModelTests: XCTestCase {
         
         XCTAssertEqual(viewModel.showSettingsSheet, false)
         XCTAssertEqual(viewModel.showCreateSheet, false)
-        XCTAssertEqual(viewModel.showEditSheet, false)
         
         XCTAssertEqual(viewModel.showDeleteAlert, false)
         XCTAssertEqual(viewModel.showErrorAlert, false)
@@ -55,7 +53,7 @@ final class TodosListViewModelTests: XCTestCase {
     
     // MARK: - Tests for Fetching Todos
     
-    func testFetchTodos_success() async {
+    func testFetchTodosSuccess() async {
         // Given
         mockRepository.shouldFail = false
         
@@ -69,7 +67,7 @@ final class TodosListViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.showErrorAlert, "Error alert should not be shown on success")
     }
     
-    func testFetchTodos_failure() async {
+    func testFetchTodosFailure() async {
         // Given
         mockRepository.shouldFail = true
         
@@ -83,9 +81,65 @@ final class TodosListViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.errorMessage, "There was error fetching your Tasks.")
     }
     
+    // MARK: - Tests for Refreshing Todos
+    
+    func testRefreshTodosWhenNotRefreshingFetchTodosCalled() async {
+        // Given
+        await viewModel.fetchTodos()
+        viewModel.isRefreshing = false
+        let expectation = XCTestExpectation(description: "isRefreshing should be true while fetching todos.")
+        
+        Task {
+            await MainActor.run {
+                if viewModel.isRefreshing {
+                    expectation.fulfill()
+                }
+            }
+        }
+        
+        // When
+        await viewModel.refreshTodos()
+        
+        // Then
+        XCTAssertFalse(viewModel.isRefreshing, "isRefreshing should be false after fetching todos.")
+        await fulfillment(of: [expectation], timeout: 3.0)
+        
+        XCTAssertEqual(viewModel.uiState, .idle, "UI state should be idle after refreshing completes.")
+    }
+    
+    func testRefreshTodosWhenAlreadyRefreshingDoesNotFetch() async {
+        // Given
+        await viewModel.fetchTodos()
+        let previousCount = viewModel.todos.count
+        
+        viewModel.isRefreshing = true
+        
+        
+        // When
+        await viewModel.refreshTodos()
+        
+        // Then
+        XCTAssertTrue(viewModel.isRefreshing, "isRefreshing should remain true if refreshTodos is called while already refreshing.")
+        XCTAssertTrue(viewModel.todos.count == previousCount, "Todos should remain empty if refreshTodos is called while already refreshing.")
+    }
+    
+    func testRefreshTodosOnFetchFailureShowsError() async {
+        // Given
+        viewModel.isRefreshing = false
+        mockRepository.shouldFail = true
+        
+        // When
+        await viewModel.refreshTodos()
+        
+        // Then
+        XCTAssertFalse(viewModel.isRefreshing, "isRefreshing should be false if refreshTodos fails.")
+        XCTAssertTrue(viewModel.showErrorAlert, "Error alert should be shown if refreshTodos fails.")
+        XCTAssertEqual(viewModel.errorMessage, "There was error fetching your Tasks.")
+    }
+    
     // MARK: - Tests for Update Todo
     
-    func testUpdateTodo_success() async {
+    func testUpdateTodoSuccess() async {
         // Given
         let todo = mockTodos.randomElement()!
         var todoToUpdate = todo
@@ -108,7 +162,7 @@ final class TodosListViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.showErrorAlert, "Error alert should not be shown on success")
     }
     
-    func testUpdateTodo_failure() async {
+    func testUpdateTodoFailure() async {
         // Given
         
         mockRepository.shouldFail = true
@@ -126,7 +180,7 @@ final class TodosListViewModelTests: XCTestCase {
     
     // MARK: - Tests for Delete Todo
     
-    func testDeleteTodo_success() async {
+    func testDeleteTodoSuccess() async {
         // Given
         let id = mockTodos.randomElement()!.id
         
@@ -141,7 +195,7 @@ final class TodosListViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.showErrorAlert, "Error alert should not be shown on success")
     }
     
-    func testDeleteTodo_failure() async {
+    func testDeleteTodoFailure() async {
         // Given
         mockRepository.shouldFail = true
         let id = mockTodos.randomElement()!.id
@@ -295,5 +349,76 @@ final class TodosListViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.disabled)
     }
     
+    // MARK: - Tests for toggleSettingsSheet
+    
+    func testToggleSettingsSheetTrueSetsShowSettingsSheetToTrue() {
+        // Given
+        viewModel.showSettingsSheet = false
+        
+        // When
+        viewModel.toggleSettingsSheet(true)
+        
+        // Then
+        XCTAssertTrue(viewModel.showSettingsSheet, "showSettingsSheet should be true when toggleSettingsSheet is called with true.")
+    }
+    
+    func testToggleSettingsSheetFalseSetsShowSettingsSheetToFalse() {
+        // Given
+        viewModel.showSettingsSheet = true
+        
+        // When
+        viewModel.toggleSettingsSheet(false)
+        
+        // Then
+        XCTAssertFalse(viewModel.showSettingsSheet, "showSettingsSheet should be false when toggleSettingsSheet is called with false.")
+    }
+    
+    // MARK: - Tests for toggleCreateSheet
+    
+    func testToggleCreateSheetTrueSetsShowCreateSheetToTrue() {
+        // Given
+        viewModel.showCreateSheet = false
+        
+        // When
+        viewModel.toggleCreateSheet(true)
+        
+        // Then
+        XCTAssertTrue(viewModel.showCreateSheet, "showCreateSheet should be true when toggleCreateSheet is called with true.")
+    }
+    
+    func testToggleCreateSheetFalseSetsShowCreateSheetToFalse() {
+        // Given
+        viewModel.showCreateSheet = true
+        
+        // When
+        viewModel.toggleCreateSheet(false)
+        
+        // Then
+        XCTAssertFalse(viewModel.showCreateSheet, "showCreateSheet should be false when toggleCreateSheet is called with false.")
+    }
+    
+    // MARK: - Tests for toggleDeleteAlert
+    
+    func testToggleDeleteAlertTrueSetsShowDeleteAlertToTrue() {
+        // Given
+        viewModel.showDeleteAlert = false
+        
+        // When
+        viewModel.toggleDeleteAlert(true)
+        
+        // Then
+        XCTAssertTrue(viewModel.showDeleteAlert, "showDeleteAlert should be true when toggleDeleteAlert is called with true.")
+    }
+    
+    func testToggleDeleteAlertFalseSetsShowDeleteAlertToFalse() {
+        // Given
+        viewModel.showDeleteAlert = true
+        
+        // When
+        viewModel.toggleDeleteAlert(false)
+        
+        // Then
+        XCTAssertFalse(viewModel.showDeleteAlert, "showDeleteAlert should be false when toggleDeleteAlert is called with false.")
+    }
 }
 

@@ -65,9 +65,8 @@ struct TodoView: View {
                             .frame(width: 30, height: 30)
                     }
 
-                    
                     Button {
-                        viewModel.showDeleteAlert = true
+                        viewModel.toggleDeleteAlert(true)
                     } label: {
                         Image("delete")
                             .resizable()

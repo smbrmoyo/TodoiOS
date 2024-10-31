@@ -17,14 +17,13 @@ struct TodosListViewModifier: ViewModifier {
             }
             .refreshable {
                 Task {
-                    viewModel.isRefreshing = true
-                    await viewModel.fetchTodos()
+                    await viewModel.refreshTodos()
                 }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        viewModel.showSettingsSheet = true
+                        viewModel.toggleSettingsSheet(true)
                     } label: {
                         Image(systemName: "gear")
                             .font(.system(.title))
@@ -38,7 +37,7 @@ struct TodosListViewModifier: ViewModifier {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.showCreateSheet = true
+                        viewModel.toggleCreateSheet(true)
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(.title))
