@@ -15,11 +15,23 @@ final class TodosRepository: TodosRepositoryProtocol {
                     sortDirection: SortDirection,
                     limit: Int) async throws -> FetchTodosResponse {
         do {
+            var requestBody: [String: Any?] = [
+                "completed": filter.queryParameter,
+                "limit": limit,
+                "sort_by": sortBy.sortKey(with: sortDirection)
+            ]
+            
+            if let lastKey = lastKey {
+                requestBody["lastKey"] = [
+                    "id": lastKey.id,
+                    "type": lastKey.type,
+                    "\(sortBy)Date": sortBy == .due ? lastKey.dueDate : lastKey.createdDate
+                ]
+            }
+            
             let result: FetchTodosResponse = try await makeRequest(from: Endpoint.fetchTodos.urlString,
                                                                    method: Endpoint.fetchTodos.httpMethod,
-                                                                   body: ["lastKey": lastKey ,
-                                                                          "completed": filter.queryParameter,
-                                                                          "sort_by": sortBy.sortKey(with: sortDirection)])
+                                                                   body: requestBody)
             
             return result
         } catch {
@@ -86,6 +98,27 @@ final class TodosRepository: TodosRepositoryProtocol {
         } catch {
             print(error)
             throw error
+        }
+    }
+    
+    func bulkCreateTodos() async {
+        await withTaskGroup(of: Void.self) { group in
+            for i in 51...100 {
+                group.addTask {
+                    let taskDescription = "Task \(i)"
+                    let randomInterval = TimeInterval.random(in: 86_400...172_800)
+                    let dueDate = Date.now.addingTimeInterval(randomInterval)
+                    
+                    do {
+                        _ = try await self.createTodo(taskDescription: taskDescription,
+                                                      dueDate: dueDate,
+                                                      completed: false)
+                        print("Created \(taskDescription)")
+                    } catch {
+                        print("Failed to create \(taskDescription): \(error)")
+                    }
+                }
+            }
         }
     }
     

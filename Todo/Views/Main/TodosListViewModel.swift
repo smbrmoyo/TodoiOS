@@ -33,6 +33,9 @@ final class TodosListViewModel: ObservableObject {
     private var lastSortBy: SortBy = .due
     private var lastSortDirection: SortDirection = .ascending
     private var lastKey: FetchTodosLastKey?
+    var canLoadMore: Bool {
+        !todos.isEmpty && lastKey != nil
+    }
     
     // MARK: - Initializer
     
@@ -84,6 +87,30 @@ final class TodosListViewModel: ObservableObject {
         
         isRefreshing = true
         await fetchTodos()
+    }
+    
+    @MainActor
+    func fetchMoreTodos() async {
+        do {
+            let result = try await repository.fetchTodos(lastKey: lastKey,
+                                                         filter: selectedFilter,
+                                                         sortBy: sortBy,
+                                                         sortDirection: sortDirection,
+                                                         limit: selectedLimit.rawValue)
+            todos.append(contentsOf: result.data)
+            lastKey = result.lastKey
+            uiState = .idle
+            lastSelectedFilter = selectedFilter
+            lastSortBy = sortBy
+            lastSortDirection = sortDirection
+            isRefreshing = false
+        } catch {
+            uiState = .idle
+            isRefreshing = false
+            errorMessage = "There was error fetching your Tasks."
+            showSettingsSheet = false
+            showErrorAlert = true
+        }
     }
     
     @MainActor

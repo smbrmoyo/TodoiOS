@@ -16,6 +16,14 @@ struct TodosListIdleView: View {
                 ForEach(viewModel.todos) { todo in
                     TodoView(todo: todo, viewModel: viewModel)
                 }
+                
+                if viewModel.canLoadMore {
+                    ProgressView()
+                        .padding()
+                        .task {
+                            await viewModel.fetchMoreTodos()
+                        }
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ func makeRequest<T: Codable>(
     from urlString: String,
     method: String = "GET",
     parameters: [String: String] = [:],
-    body: [String: Codable]? = nil,
+    body: [String: Any?]? = nil,
     headers: [String: String]? = nil
 ) async throws -> T {
     
