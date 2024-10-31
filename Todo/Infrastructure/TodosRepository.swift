@@ -12,7 +12,8 @@ final class TodosRepository: TodosRepositoryProtocol {
     func fetchTodos(lastKey: FetchTodosLastKey?,
                     filter: QueryFilter,
                     sortBy: SortBy,
-                    sortDirection: SortDirection) async throws -> FetchTodosResponse {
+                    sortDirection: SortDirection,
+                    limit: Int) async throws -> FetchTodosResponse {
         do {
             let result: FetchTodosResponse = try await makeRequest(from: Endpoint.fetchTodos.urlString,
                                                                    method: Endpoint.fetchTodos.httpMethod,

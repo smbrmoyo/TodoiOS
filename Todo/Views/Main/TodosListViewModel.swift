@@ -19,6 +19,7 @@ final class TodosListViewModel: ObservableObject {
     @Published var selectedFilter: QueryFilter = .all
     @Published var sortBy: SortBy = .due
     @Published var sortDirection: SortDirection = .ascending
+    @Published var selectedLimit: FetchTodosLimit = .ten
     
     @Published var showSettingsSheet: Bool = false
     @Published var showCreateSheet: Bool = false
@@ -46,9 +47,10 @@ final class TodosListViewModel: ObservableObject {
         uiState = todos.isEmpty ? .loading : isRefreshing ? .idle : .working
         do {
             let result = try await repository.fetchTodos(lastKey: lastKey,
-                                                    filter: selectedFilter,
-                                                    sortBy: sortBy,
-                                                    sortDirection: sortDirection)
+                                                         filter: selectedFilter,
+                                                         sortBy: sortBy,
+                                                         sortDirection: sortDirection,
+                                                         limit: selectedLimit.rawValue)
             todos = result.data
             lastKey = result.lastKey
             uiState = .idle

@@ -19,6 +19,8 @@ struct SettingsView: View {
                 
                 SortDirectionView(sortDirection: $todosListViewModel.sortDirection)
                 
+                LimitView(selectedLimit: $todosListViewModel.selectedLimit)
+                
                 Button("Save") {
                     todosListViewModel.toggleSettingsSheet(false)
                 }

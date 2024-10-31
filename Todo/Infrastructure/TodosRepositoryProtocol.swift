@@ -17,15 +17,17 @@ protocol TodosRepositoryProtocol {
         - filter: A `QueryFilter` specifying criteria to filter todos.
         - sortBy: A `SortBy` specifying the attribute by which to sort the todos.
         - sortDirection: A `SortDirection` specifying whether sorting is ascending or descending.
+        - limit: The number of Tasks to fetch.
      
-     - Returns: The `FetchTodosResponse` object containg an Array of `Todo` objects matching the filter and sorting criteria.
+     - Returns: The `FetchTodosResponse` object containing an Array of `Todo` objects matching the filter and sorting criteria.
      
      - Throws: An error if the fetching process encounters an issue.
      */
     func fetchTodos(lastKey: FetchTodosLastKey?,
                     filter: QueryFilter,
                     sortBy: SortBy,
-                    sortDirection: SortDirection) async throws -> FetchTodosResponse
+                    sortDirection: SortDirection,
+                    limit: Int) async throws -> FetchTodosResponse
     
     /**
      Retrieves a specific todo by its unique identifier.

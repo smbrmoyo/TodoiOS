@@ -15,7 +15,8 @@ final class MockTodosRepository: TodosRepositoryProtocol {
     func fetchTodos(lastKey: FetchTodosLastKey?,
                     filter: QueryFilter,
                     sortBy: SortBy,
-                    sortDirection: SortDirection) async throws -> FetchTodosResponse {
+                    sortDirection: SortDirection,
+                    limit: Int) async throws -> FetchTodosResponse {
         
         guard !shouldFail else {
             let errors: [NetworkError] = [
