@@ -45,3 +45,11 @@ struct Todo: Identifiable, Codable, Equatable {
         self.completed = completed
     }
 }
+
+extension Todo {
+    static let emptyTodo: Todo = .init(id: "",
+                                       taskDescription: "",
+                                       createdDate: .now,
+                                       dueDate: .now,
+                                       completed: false)
+}

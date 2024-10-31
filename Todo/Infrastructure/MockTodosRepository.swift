@@ -10,7 +10,7 @@ import Foundation
 final class MockTodosRepository: TodosRepositoryProtocol {
     
     var isTesting: Bool = false
-    var shouldFail: Bool = false
+    var shouldFail: Bool = true
     
     func fetchTodos(lastKey: String,
                     filter: QueryFilter,
@@ -102,11 +102,7 @@ final class MockTodosRepository: TodosRepositoryProtocol {
                      completed: completed)
     }
     
-    func updateTodo(id: String,
-                    taskDescription: String,
-                    dueDate: Date,
-                    createdDate: Date,
-                    completed: Bool) async throws -> Todo {
+    func updateTodo(todo: Todo) async throws -> Todo {
         
         guard !shouldFail else {
             let errors: [NetworkError] = [
@@ -127,17 +123,13 @@ final class MockTodosRepository: TodosRepositoryProtocol {
         do {
             let todos: [Todo] = try FileManager.loadJson(fileName: "Todos")
             
-            guard var todoToUpdate = todos.first(where: { $0.id == id }) else {
+            guard let _ = todos.first(where: { $0.id == todo.id }) else {
                 throw NetworkError.custom(message: "No Todo Found.")
             }
             
-            todoToUpdate.completed = completed
-            todoToUpdate.taskDescription = taskDescription
-            todoToUpdate.dueDate = dueDate
-            
             try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
             
-            return todoToUpdate
+            return todo
         } catch {
             print(error)
             throw error

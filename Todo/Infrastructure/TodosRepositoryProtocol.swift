@@ -55,22 +55,11 @@ protocol TodosRepositoryProtocol {
     /**
      Updates an existing todo with new values for description, due date, and completion status.
      
-     - Parameters:
-        - id: The unique identifier of the todo to update.
-        - taskDescription: A `String` describing the task to be completed.
-        - dueDate: A `Date` specifying the updated deadline for the todo.
-        - createdDate: A `Date` specifying when the todo was created.
-        - completed: A `Bool` indicating whether the todo has been completed.
-     
+     - Parameter id: The `Todo` to be updated.
      - Returns: The updated `Todo` object.
-     
      - Throws: An error if the update process encounters an issue or the todo cannot be found.
      */
-    func updateTodo(id: String,
-                    taskDescription: String,
-                    dueDate: Date,
-                    createdDate: Date,
-                    completed: Bool) async throws -> Todo
+    func updateTodo(todo: Todo) async throws -> Todo
     
     /**
      Deletes a todo by its unique identifier.

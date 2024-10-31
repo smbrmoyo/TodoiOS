@@ -27,5 +27,5 @@ struct TodosListView: View {
 }
 
 #Preview {
-    TodosListView()
+    TodosListView(viewModel: TodosListViewModel(repository: MockTodosRepository()))
 }

@@ -10,9 +10,13 @@ import SwiftUI
 struct TodoView: View {
     @State private var todo: Todo
     @ObservedObject var viewModel: TodosListViewModel
-
-    init(todo: Todo, viewModel: TodosListViewModel) {
+    @StateObject var todoViewModel: TodoViewModel
+    
+    init(todo: Todo,
+         viewModel: TodosListViewModel,
+         repository: TodosRepositoryProtocol = MockTodosRepository()) {
         self._todo = State(initialValue: todo)
+        self._todoViewModel = StateObject(wrappedValue: TodoViewModel(todo: todo, repository: repository))
         self.viewModel = viewModel
     }
     
@@ -29,7 +33,7 @@ struct TodoView: View {
                         .padding()
                 }
                 .frame(height: 100)
-                  
+                
                 VStack(alignment: .leading) {
                     Text(todo.taskDescription)
                         .fontWeight(.medium)
@@ -51,20 +55,18 @@ struct TodoView: View {
                 HStack(spacing: 12) {
                     Button {
                         Task {
-                            todo.completed.toggle()
-                            let result = await viewModel.updateTodo(todo: todo)
+                            let result = await todoViewModel.toggleCompletedStatus(todo: todo)
                             
-                            guard result else {
-                                todo.completed.toggle()
-                                return
-                            }
+                            guard result != .emptyTodo else { return }
+                            
+                            todo = result
                         }
                     } label: {
                         Image(todo.completed ? "Check-box" : "Check-box-outline-blank")
                             .resizable()
                             .frame(width: 30, height: 30)
                     }
-
+                    
                     Button {
                         viewModel.toggleDeleteAlert(true)
                     } label: {
@@ -72,7 +74,7 @@ struct TodoView: View {
                             .resizable()
                             .frame(width: 30, height: 30)
                     }
-
+                    
                 }
             }
             .padding(.horizontal, 8)
@@ -80,6 +82,7 @@ struct TodoView: View {
         .frame(height: 100)
         .padding(.vertical, 4)
         .padding(.horizontal, 16)
+        .working(uiState: todoViewModel.uiState)
         .alert("Do you want to delete this Task?",
                isPresented: $viewModel.showDeleteAlert) {
             Button("Delete", role: .destructive) {
@@ -90,9 +93,30 @@ struct TodoView: View {
             
             Button("Cancel", role: .cancel) {}
         }
+               .alert("Error", isPresented: $todoViewModel.showErrorAlert) {
+                   Button("OK") {}
+                   
+                   Button("Retry") {
+                       Task {
+                           let result = await todoViewModel.toggleCompletedStatus(todo: todo)
+                           
+                           guard result != .emptyTodo else { return }
+                           
+                           todo = result
+                       }
+                   }
+               } message: {
+                   Text(todoViewModel.errorMessage)
+               }
     }
 }
 
 #Preview {
-    TodosListView()
+    TodoView(todo: Todo(id: "1C78FE76-8521-4E07-89AD-0F2C7A21C819",
+                        taskDescription: "Buy groceries",
+                        createdDate: .now,
+                        dueDate: .now.addingTimeInterval(86400),
+                        completed: .random()),
+             viewModel: TodosListViewModel(repository: MockTodosRepository()),
+             repository: MockTodosRepository())
 }

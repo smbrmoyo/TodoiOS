@@ -90,11 +90,7 @@ final class TodosListViewModel: ObservableObject {
         }
         do {
             uiState = .working
-            let result = try await repository.updateTodo(id: todo.id,
-                                                         taskDescription: todo.taskDescription,
-                                                         dueDate: todo.dueDate,
-                                                         createdDate: todo.createdDate,
-                                                         completed: todo.completed)
+            let result = try await repository.updateTodo(todo: todo)
             
             guard let index = todos.firstIndex(where: { $0.id == result.id }) else { return false }
             
