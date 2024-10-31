@@ -12,9 +12,9 @@ enum QueryFilter: String, Identifiable, CaseIterable {
     
     var id: String { rawValue }
     
-    var queryParameter: String {
+    var queryParameter: String? {
         switch self {
-        case .all: ""
+        case .all: nil
         case .complete: "true"
         case .incomplete: "false"
         }

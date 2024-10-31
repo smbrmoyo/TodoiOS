@@ -18,14 +18,14 @@ protocol TodosRepositoryProtocol {
         - sortBy: A `SortBy` specifying the attribute by which to sort the todos.
         - sortDirection: A `SortDirection` specifying whether sorting is ascending or descending.
      
-     - Returns: An array of `Todo` objects matching the filter and sorting criteria.
+     - Returns: The `FetchTodosResponse` object containg an Array of `Todo` objects matching the filter and sorting criteria.
      
      - Throws: An error if the fetching process encounters an issue.
      */
-    func fetchTodos(lastKey: String,
+    func fetchTodos(lastKey: FetchTodosLastKey?,
                     filter: QueryFilter,
                     sortBy: SortBy,
-                    sortDirection: SortDirection) async throws -> [Todo]
+                    sortDirection: SortDirection) async throws -> FetchTodosResponse
     
     /**
      Retrieves a specific todo by its unique identifier.

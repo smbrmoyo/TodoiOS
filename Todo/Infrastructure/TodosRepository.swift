@@ -9,17 +9,18 @@ import Foundation
 
 final class TodosRepository: TodosRepositoryProtocol {
     
-    func fetchTodos(lastKey: String,
+    func fetchTodos(lastKey: FetchTodosLastKey?,
                     filter: QueryFilter,
                     sortBy: SortBy,
-                    sortDirection: SortDirection) async throws -> [Todo] {
+                    sortDirection: SortDirection) async throws -> FetchTodosResponse {
         do {
             let result: FetchTodosResponse = try await makeRequest(from: Endpoint.fetchTodos.urlString,
-                                                                   parameters: ["lastKey": lastKey,
-                                                                                "completed": filter.queryParameter,
-                                                                                "sort_by": sortBy.sortKey(with: sortDirection)])
+                                                                   method: Endpoint.fetchTodos.httpMethod,
+                                                                   body: ["lastKey": lastKey ,
+                                                                          "completed": filter.queryParameter,
+                                                                          "sort_by": sortBy.sortKey(with: sortDirection)])
             
-            return result.data
+            return result
         } catch {
             print(error)
             throw error

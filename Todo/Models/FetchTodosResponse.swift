@@ -9,5 +9,5 @@ import Foundation
 
 struct FetchTodosResponse: Codable {
     let data: [Todo]
-    let status: ResponseStatus
+    let lastKey: FetchTodosLastKey?
 }

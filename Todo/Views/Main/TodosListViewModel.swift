@@ -31,7 +31,7 @@ final class TodosListViewModel: ObservableObject {
     private var lastSelectedFilter: QueryFilter = .all
     private var lastSortBy: SortBy = .due
     private var lastSortDirection: SortDirection = .ascending
-    private var lastKey: String = ""
+    private var lastKey: FetchTodosLastKey?
     
     // MARK: - Initializer
     
@@ -45,10 +45,12 @@ final class TodosListViewModel: ObservableObject {
     func fetchTodos() async {
         uiState = todos.isEmpty ? .loading : isRefreshing ? .idle : .working
         do {
-            todos = try await repository.fetchTodos(lastKey: lastKey,
+            let result = try await repository.fetchTodos(lastKey: lastKey,
                                                     filter: selectedFilter,
                                                     sortBy: sortBy,
                                                     sortDirection: sortDirection)
+            todos = result.data
+            lastKey = result.lastKey
             uiState = .idle
             lastSelectedFilter = selectedFilter
             lastSortBy = sortBy

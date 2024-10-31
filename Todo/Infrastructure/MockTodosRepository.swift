@@ -12,10 +12,10 @@ final class MockTodosRepository: TodosRepositoryProtocol {
     var isTesting: Bool = false
     var shouldFail: Bool = true
     
-    func fetchTodos(lastKey: String,
+    func fetchTodos(lastKey: FetchTodosLastKey?,
                     filter: QueryFilter,
                     sortBy: SortBy,
-                    sortDirection: SortDirection) async throws -> [Todo] {
+                    sortDirection: SortDirection) async throws -> FetchTodosResponse {
         
         guard !shouldFail else {
             let errors: [NetworkError] = [
@@ -35,9 +35,11 @@ final class MockTodosRepository: TodosRepositoryProtocol {
         
         do {
             let result: [Todo] = try FileManager.loadJson(fileName: "Todos")
+            let filteredTodos = result.filter(filter.filter()).sorted(by: sortBy.comparator(direction: sortDirection))
             try await Task.sleep(for: .seconds(isTesting ? 0 : 1))
             
-            return result.filter(filter.filter()).sorted(by: sortBy.comparator(direction: sortDirection))
+            return FetchTodosResponse(data: filteredTodos,
+                                      lastKey: nil)
         } catch {
             print(error)
             throw error
